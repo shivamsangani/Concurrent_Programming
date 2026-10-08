@@ -12,7 +12,7 @@ class Logger {
 
   void Log(const std::string contents) {
     /* Scoped locks are so useful, that the `mutex` header file provides one! */
-    std::scoped_lock doesnt_matter_what_we_call_it(mutex_);
+    std::scoped_lock<std::mutex> doesnt_matter_what_we_call_it(mutex_);
     if (contents.size() + contents_.size() > max_capacity_) {
       return;
     }

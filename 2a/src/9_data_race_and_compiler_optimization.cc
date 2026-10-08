@@ -8,7 +8,7 @@ static void Foo(int& x) {
   x = 1;
 }
 
-static void Bar(int& x, std::mutex& m) {
+static void Bar(int& x) {
   std::cout << "Thread 2 waiting to be woken up\n";
   /* C++ compilers assume programs do not have undefined behaviour, which
    * allows this loop to be optimised. See the lecture and lecture slides
@@ -20,10 +20,9 @@ static void Bar(int& x, std::mutex& m) {
 
 int main() { 
   int x = 0;
-  std::mutex m;
 
   std::thread t1(Foo, std::ref(x));
-  std::thread t2(Bar, std::ref(x), std::ref(m));
+  std::thread t2(Bar, std::ref(x));
 
   t1.join();
   t2.join();
