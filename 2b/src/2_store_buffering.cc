@@ -11,12 +11,14 @@ static int r2;
 
 static void T1() {
   std::this_thread::sleep_for(std::chrono::milliseconds(1));
-  // TODO
+  x.store(1, std::memory_order_relaxed);
+  r2 = y.load(std::memory_order_relaxed);
 }
 
 static void T2() {
   std::this_thread::sleep_for(std::chrono::milliseconds(1));
-  // TODO
+  y.store(1, std::memory_order_relaxed);
+  r1 = x.load(std::memory_order_relaxed);
 }
 
 int main() {
