@@ -14,24 +14,27 @@ class ThreadSafeList<T> {
     private val logLock = ReentrantLock()
 
     fun push(item: T) {
-        logLock.withLock {
-            _log.append("Push succeeded")
-            listLock.withLock { list.add(item) }
+        logLock.withLock { 
+            _log.append("Push suceeded")
+            list.add(item)
         }
+
     }
 
     fun pop(): T? {
+
         logLock.withLock {
-            listLock.withLock {
-                if (list.isEmpty()) {
-                    _log.append("Pop failed")
-                } else {
-                    _log.append("Pop succeeded")
-                }
-                return list.removeFirstOrNull()
+            if(list.isEmpty()) { 
+                _log.append("Pop failed")
             }
+            else
+            {
+                _log.append("Pop succeeded")
+            }
+            return list.removeFirstOrNull()
         }
     }
 
     val log: String get() = _log.toString()
 }
+

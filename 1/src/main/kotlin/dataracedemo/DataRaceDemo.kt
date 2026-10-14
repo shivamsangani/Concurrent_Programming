@@ -5,8 +5,8 @@ import kotlin.concurrent.thread
 import kotlin.concurrent.withLock
 
 fun main() {
-    val numElements: Int = 1 shl 24
-    val numThreads: Int = 1 shl 2
+    val numElements: Int = 1 shl 24 //2^24 elements
+    val numThreads: Int = 1 shl 12  //4 threads
     val elemsPerThread: Int = numElements / numThreads
 
     val data: List<Int> = List(numElements) { 1 }
@@ -15,15 +15,13 @@ fun main() {
     val lock = ReentrantLock()
 
     // TODO: Spawn threads for summing, and join them
-    val threads = (0 until numThreads).map { i ->
+    val threads = (0 until numThreads).map { i -> 
         thread {
-            val partialSum = data.subList(i * elemsPerThread, (i + 1) * elemsPerThread).sum()
-            // Here there is a Write-Read data race on total.
-            total += partialSum
-            // This can be resolved by using a lock:
-            // lock.withLock { total += partialSum }
+            val partialSum = data.subList(i * elemsPerThread, (i+1) * elemsPerThread).sum()
+            lock.withLock { total += partialSum}
         }
     }
+
 
     threads.forEach { it.join() }
 
