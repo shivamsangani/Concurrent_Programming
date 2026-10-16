@@ -1,33 +1,37 @@
 #include <atomic>
+#include <cstddef>
 #include <functional>
 #include <iostream>
+#include <limits>
 #include <thread>
 #include <vector>
 
-template <typename T>
-size_t Find(const std::vector<T>& data, std::function<bool(T)> predicate) {
-  std::atomic<size_t> result(std::numeric_limits<size_t>::max());
-
-  std::function<void(size_t, size_t)> thread_body = [&predicate, &data, &result](size_t start, size_t end) -> void {
-    for (size_t i = start; i < end; i++) {
-      if (predicate(data[i])) {
-        // We can use a relaxed operation here because we do not need a
-        // guarentee of ordering between different memory locations.
-        // There will not be a speed up as a result of relaxed ordering here
-        // though because at most two store operations will take place.
-        result.store(i, std::memory_order_relaxed) ;
-        return;
+template <typename T> 
+size_t Find(const std::vector<T>& data, std::function<bool(T)> predicate) { 
+  (void)data; 
+  (void)predicate; 
+  std::atomic<size_t> result(std::numeric_limits<size_t>::max()); //return max value of size_t
+  //TODO
+  std::function<void(size_t, size_t)> threadBody = [&predicate, &data, &result](size_t start, size_t end) -> void { 
+    for(size_t i = start; i < end; i++)
+    {
+      if(predicate(data[i]))
+      {
+        //only ever storing to result twice, so stores are not causing long execution time
+        //iterating over all numbers its what's taking long - so optimising store is not deep
+        result.store(i, std::memory_order_relaxed); 
+        return; 
       }
     }
   };
 
-  std::thread t1(thread_body, 0, data.size() / 2);
-  std::thread t2(thread_body, data.size() / 2, data.size());
+  std::thread t1(threadBody, 0, data.size()/2); 
+  std::thread t2(threadBody, data.size()/2, data.size()); 
 
-  t1.join();
-  t2.join();
+  t1.join(); 
+  t2.join(); 
 
-  return result;
+  return result; 
 }
 
 int main() {

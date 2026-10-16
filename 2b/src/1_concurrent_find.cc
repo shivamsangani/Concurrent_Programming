@@ -1,32 +1,35 @@
 #include <atomic>
+#include <cstddef>
 #include <functional>
 #include <iostream>
+#include <limits>
 #include <thread>
 #include <vector>
 
-template <typename T>
-size_t Find(const std::vector<T>& data, std::function<bool(T)> predicate) {
-  // Using an atomic allows for a well-defined race between the two threads
-  // searching data.
-  std::atomic<size_t> result(std::numeric_limits<size_t>::max());
-
-  std::function<void(size_t, size_t)> thread_body = [&predicate, &data, &result](size_t start, size_t end) -> void {
-    for (size_t i = start; i < end; i++) {
-      if (predicate(data[i])) {
-        // It is good practice to be explicit about atomic operations.
-        result.store(i);
-        return;
+template <typename T> 
+size_t Find(const std::vector<T>& data, std::function<bool(T)> predicate) { 
+  (void)data; 
+  (void)predicate; 
+  std::atomic<size_t> result(std::numeric_limits<size_t>::max()); //return max value of size_t
+  //TODO
+  std::function<void(size_t, size_t)> threadBody = [&predicate, &data, &result](size_t start, size_t end) -> void { 
+    for(size_t i = start; i < end; i++)
+    {
+      if(predicate(data[i]))
+      {
+        result.store(i); 
+        return; 
       }
     }
   };
 
-  std::thread t1(thread_body, 0, data.size() / 2);
-  std::thread t2(thread_body, data.size() / 2, data.size());
+  std::thread t1(threadBody, 0, data.size()/2); 
+  std::thread t2(threadBody, data.size()/2, data.size()); 
 
-  t1.join();
-  t2.join();
+  t1.join(); 
+  t2.join(); 
 
-  return result;
+  return result; 
 }
 
 int main() {

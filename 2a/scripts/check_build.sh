@@ -12,7 +12,7 @@ cd temp
 mkdir -p build-tsan
 pushd build-tsan
 
-cmake -G "Unix Makefiles" ../.. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_COMPILER=clang++-20 -DUSE_SANITIZER=tsan
+cmake -G "Unix Makefiles" ../.. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_COMPILER=/usr/bin/clang++ -DUSE_SANITIZER=tsan -DCMAKE_CXX_FLAGS="-Wno-poison-system-directories -Wno-thread-safety -Wno-thread-safety-negative"
 cmake --build . --config Debug --parallel
 
 popd

@@ -23,7 +23,9 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL Clang OR CMAKE_CXX_COMPILER_ID STREQUAL AppleC
           -Wno-weak-vtables
           -Wno-unused-function
   )
-  add_link_options(-latomic)
+  if(NOT APPLE)
+    add_link_options(-latomic)
+  endif()
 
   set(USE_SANITIZER "" CACHE STRING
           "Use the clang sanitizer [asan|tsan]")
