@@ -10,16 +10,21 @@
 
 class MutexSimple {
  public:
-  MutexSimple() {}
+  MutexSimple() : state_(kFree) {}
 
   void Lock() {
     // TODO
+    while(state_.exchange(kLocked) == kLocked){ 
+      syscall(SYS_futex, reinterpret_cast<int*>(&state_), FUTEX_WAIT, kLocked, nullptr, nullptr, 0); 
+    }
     // syscall(SYS_futex, reinterpret_cast<int*>(&[STATE_VAR]), FUTEX_WAIT,
     // [VALUE], nullptr, nullptr, 0);
   }
 
   void Unlock() {
     // TODO
+    state_.store(kFree); 
+    syscall(SYS_futex, reinterpret_cast<int*>(&state_), FUTEX_WAKE, 1, nullptr, nullptr, 0); 
     // syscall(SYS_futex, reinterpret_cast<int*>(&[STATE_VAR]]), FUTEX_WAKE,
     // [VALUE], nullptr, nullptr, 0);
   }
@@ -28,6 +33,9 @@ class MutexSimple {
 
  private:
   // TODO
+  const int kFree = 0; 
+  const int kLocked = 1; 
+  std::atomic<int> state_; 
 };
 
 #endif  // MUTEX_SIMPLE_H
