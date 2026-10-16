@@ -1,30 +1,26 @@
-#include <iostream>
+#include <thread> 
+#include <iostream> 
 #include <functional>
-#include <mutex>
-#include <thread>
 
-static void Foo(int& x) {
-  std::cout << "Waking up thread 2\n";
-  x = 1;
+static void Foo(int& x) { 
+  std::cout << "Waking up thread 2\n"; 
+  x = 1; 
 }
 
-static void Bar(int& x) {
-  std::cout << "Thread 2 waiting to be woken up\n";
-  /* C++ compilers assume programs do not have undefined behaviour, which
-   * allows this loop to be optimised. See the lecture and lecture slides
-   * for the details. Try compiling this program at various optimisation
-   * levels and inspect the assembly to see what happens. */
-  while (x == 0) {}
-  std::cout << "Thread 2 has been woken up!\n";
+static void Bar(int& x) { 
+  std::cout << "Thread 2 waiting to be woken up\n"; 
+  while(x == 0) {}
+  std::cout << "Thread 2 has been woken up!\n"; 
 }
 
 int main() { 
-  int x = 0;
+  int x = 0; 
 
-  std::thread t1(Foo, std::ref(x));
-  std::thread t2(Bar, std::ref(x));
+  std::thread t1(Foo, std::ref(x)); //only need std::ref when using threads otherwise compiler can infer
+  std::thread t2(Bar, std::ref(x)); 
+  
+  t1.join(); 
+  t2.join(); 
 
-  t1.join();
-  t2.join();
-  return 0;
+  return 0; 
 }
