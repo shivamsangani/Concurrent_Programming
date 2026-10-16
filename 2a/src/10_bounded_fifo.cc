@@ -94,5 +94,5 @@ int main() {
     consumer.join(); 
   }
 
-  std::cout << "final total: " << final_total << std::endl; 
+  std::cout << "final total " << final_total << std::endl; 
 }

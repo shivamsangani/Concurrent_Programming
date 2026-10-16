@@ -3,3 +3,6 @@
 out
 CMakeSettings.json
 .vscode
+compile_commands.json
+.cache/
+a.out*
