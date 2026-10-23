@@ -6,20 +6,25 @@
 
 class SpinLockSimple {
  public:
-  SpinLockSimple() {}
+  SpinLockSimple() : held_(false){}
 
   void Lock() {
-    // TODO
+    while (held_.exchange(true, std::memory_order_relaxed) == true)
+    {
+      //we have failed to acquire the lock - spin
+    }
+    //we have acquired the lock
+    return; 
   }
 
   void Unlock() {
-    // TODO
+    held_.store(false, std::memory_order_relaxed); 
   }
 
   [[nodiscard]] static std::string GetName() { return "Simple"; }
 
  private:
-  // TODO
+  std::atomic<bool> held_; 
 };
 
 #endif  // SPIN_LOCK_SIMPLE_H

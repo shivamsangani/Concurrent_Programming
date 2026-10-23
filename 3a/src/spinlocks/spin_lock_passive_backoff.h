@@ -1,6 +1,7 @@
 #ifndef SPIN_LOCK_PASSIVE_BACKOFF_H
 #define SPIN_LOCK_PASSIVE_BACKOFF_H
 
+#include <cstddef>
 #include <emmintrin.h>
 
 #include <atomic>
@@ -8,20 +9,31 @@
 
 class SpinLockPassiveBackoff {
  public:
-  SpinLockPassiveBackoff() {}
+  SpinLockPassiveBackoff() : held_(false) {}
 
   void Lock() {
-    // TODO
+    while(held_.exchange(true) == true)
+    {
+      //failed to acquire lock
+      while(held_.load()) { 
+        for(size_t i = 0; i < 4; i++)
+        {
+          _mm_pause(); 
+        }
+      }
+      //when held bit is false, we exit loop and might be able to acquire the lock 
+    }
+    //we got lock
   }
 
   void Unlock() {
-    // TODO
+    held_.store(false); 
   }
 
   [[nodiscard]] static std::string GetName() { return "Passive backoff"; }
 
  private:
-  // TODO
+  std::atomic<bool> held_; 
 };
 
 #endif  // SPIN_LOCK_PASSIVE_BACKOFF_H

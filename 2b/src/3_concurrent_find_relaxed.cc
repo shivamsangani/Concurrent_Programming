@@ -19,6 +19,11 @@ size_t Find(const std::vector<T>& data, std::function<bool(T)> predicate) {
       {
         //only ever storing to result twice, so stores are not causing long execution time
         //iterating over all numbers its what's taking long - so optimising store is not deep
+
+        //we can use a relaxed operation here because we do not need a guarantee of ordering
+        //between different memory locations
+        //there will not be a speed up as a result of relaxed ordreing here because at most 
+        //two store operations will take place
         result.store(i, std::memory_order_relaxed); 
         return; 
       }
