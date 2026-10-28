@@ -9,7 +9,7 @@ class SpinLockSimple {
   SpinLockSimple() : held_(false){}
 
   void Lock() {
-    while (held_.exchange(true, std::memory_order_relaxed) == true)
+    while (held_.exchange(true, std::memory_order_acquire) == true)
     {
       //we have failed to acquire the lock - spin
     }
@@ -18,7 +18,7 @@ class SpinLockSimple {
   }
 
   void Unlock() {
-    held_.store(false, std::memory_order_relaxed); 
+    held_.store(false, std::memory_order_release); 
   }
 
   [[nodiscard]] static std::string GetName() { return "Simple"; }

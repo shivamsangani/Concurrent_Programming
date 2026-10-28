@@ -14,7 +14,10 @@ class MutexSimple {
 
   void Lock() {
     // TODO
-    while(state_.exchange(kLocked) == kLocked){ 
+    while(state_.exchange(kLocked) == kLocked)
+    {
+      //passing the value that we get put to sleep on - kLocked
+      //in case the state of the lock has changed
       syscall(SYS_futex, reinterpret_cast<int*>(&state_), FUTEX_WAIT, kLocked, nullptr, nullptr, 0); 
     }
     // syscall(SYS_futex, reinterpret_cast<int*>(&[STATE_VAR]), FUTEX_WAIT,
@@ -24,7 +27,7 @@ class MutexSimple {
   void Unlock() {
     // TODO
     state_.store(kFree); 
-    syscall(SYS_futex, reinterpret_cast<int*>(&state_), FUTEX_WAKE, 1, nullptr, nullptr, 0); 
+    syscall(SYS_futex, reinterpret_cast<int*>(&state_), FUTEX_WAKE, 1, nullptr, nullptr, 0); //1 is the number of threads we are waking up
     // syscall(SYS_futex, reinterpret_cast<int*>(&[STATE_VAR]]), FUTEX_WAKE,
     // [VALUE], nullptr, nullptr, 0);
   }
